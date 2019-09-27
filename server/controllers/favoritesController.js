@@ -12,28 +12,38 @@ const getFavorites = (req, res, next) => {
     arr,
     (error, favorites) => {
       if (error) {
-        res.json(error);
+        return next(error);
       }
       res.locals.favorites = favorites.rows;
-      console.log(res.locals.favorites)
-
       return next();
     }
   );
 };
 
 // add favorite
-const addFavorite = (req, res, next) => {
+const addFavorite = (req, res, next) => { // post
   const { name, address, imgurl, yelpid, yelpurl } = req.body.business;
-  const user = req.body.user;
+  const username = req.body.username;
 
   pool.query(
     `INSERT INTO favorites (name, address, imgurl, yelpid, yelpurl, "user") VALUES ($1, $2, $3, $4, $5, $6)`,
     [name, address, imgurl, yelpid, yelpurl, user],
     error => {
       if (error) {
-        res.json(error);
+        return next(error);
+        // res.json(error);
       } else {
+        pool.query(
+          `SELECT * FROM favorites WHERE "user" = $1 ORDER BY _id`,
+          [username],
+          (error, favorites) => {
+            if (error) {
+              return next(error);
+            }
+            res.locals.favorites = favorites.rows;
+            return next();
+          }
+        );
         return next();
       }
     }
@@ -48,9 +58,23 @@ const deleteFavorite = (req, res, next) => {
     [currentUser, yelpid],
     error => {
       if (error) {
-        res.json(error);
+        return next(error);
+        // res.json(error);
       } else {
+
+        pool.query(
+          `SELECT * FROM favorites WHERE "user" = $1 ORDER BY _id`,
+          [ currentUser ],
+          (error, favorites) => {
+            if (error) {
+              return next(error);
+            }
+            res.locals.favorites = favorites.rows;
+            return next();
+          }
+        );
         return next();
+
       }
     }
   );

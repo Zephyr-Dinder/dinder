@@ -59,6 +59,7 @@ const createUser = (req, res, next) => {
         return next(err);
       }
       console.log('no errors');
+		  res.locals.user = username;
       next();
     });
     });

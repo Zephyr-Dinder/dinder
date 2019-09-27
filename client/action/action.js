@@ -3,12 +3,35 @@ import axios from 'axios';
 
 const LOCATION_SEARCHED = '1600 Main St 1st floor, Venice, CA 90291';
 
-export const addFav = (fav) => dispatch => {
+export const getFav = user => dispatch => {
+  dispatch({
+    type: FAVORITE_ACTION_TYPE.GET_FAV_LOADING,
+  });
+  axios.post('/api/favorites/fav', {
+    user
+  })
+    .then(res => {
+      console.log(res.data);
+      dispatch({
+        type: FAVORITE_ACTION_TYPE.GET_FAV_SUCCESS,
+        payload: res.data
+      });
+    })
+    .catch(error => {
+      dispatch({
+        type: FAVORITE_ACTION_TYPE.GET_FAV_FAIL,
+        error
+      });
+    });
+};
+
+export const addFav = (fav, username) => dispatch => {
   dispatch({
     type: FAVORITE_ACTION_TYPE.ADD_FAV_LOADING,
   });
-  axios.post('/api/fav', {
-    fav
+  axios.post('/api/favorites', {
+    business: fav,
+    username
   }).then(res => {
     dispatch({
       type: FAVORITE_ACTION_TYPE.ADD_FAV_SUCCESS,
@@ -22,12 +45,13 @@ export const addFav = (fav) => dispatch => {
   });
 };
 
-export const deleteFav = id => dispatch => {
+export const deleteFav = (username, id) => dispatch => {
   dispatch({
     type: FAVORITE_ACTION_TYPE.DELETE_FAV_LOADING,
   });
-  axios.delete('/api/fav', {
-    id
+  axios.delete('/api/favorites', {
+    currentUser: username,
+    yelpid: id
   }).then(res => {
     dispatch({
       type: FAVORITE_ACTION_TYPE.DELETE_FAV_SUCCESS,
