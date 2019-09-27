@@ -105,6 +105,23 @@ const favs = (state = {
   error: null
 }, action) => {
   switch (action.type) {
+    case FAVORITE_ACTION_TYPE.GET_FAV_LOADING:
+      return {
+        ...state,
+        loading: true
+      };
+    case FAVORITE_ACTION_TYPE.GET_FAV_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.payload
+      };
+    case FAVORITE_ACTION_TYPE.GET_FAV_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload.error
+      };
     case FAVORITE_ACTION_TYPE.ADD_FAV_LOADING:
       return {
         ...state,

@@ -16,7 +16,7 @@ router.post("/", favoritesControllers.addFavorite, (req, res) => {
 
 // delete favorites
 router.delete("/", favoritesControllers.deleteFavorite, (req, res) => {
-	return res.status(200).json("Success: favorite is deleted.");
+	return res.status(200).json(res.locals.favorites);
 });
 
 module.exports = router;

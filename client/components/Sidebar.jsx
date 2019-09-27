@@ -1,38 +1,20 @@
 import React, { Component, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import logo from '../assets/logo.png';
+import { getFav, deleteFav } from '../action/action';
 
 const Sidebar = props => {
   const dispatch = useDispatch();
-  const [favs, setFavs] = useState([]);
-  const [favsList, setFavsList] = useState([]);
 
-  // get favs data from reducer
-  // const favsFromDB = useSelector(state => state.favs);
+  const [open, setOpen] = useState(false);
 
-  const deleteFav = yelpid => dispatch({
-    type: 'DELETE_FAV',
-    payload: yelpid
-  });
+  const username = useSelector(state => state.user.data);
 
-
-  // populate fav list with favs data; runs it on mount and injected dependency with favs
   useEffect(() => {
-    const list = favs.map(fav => {
-      return <li key={fav.yelpid}>
-        <img src={fav.imgurl} />
-        <div className='fav-details'>
-          <p>{fav.name}</p>
-          <p>{fav.address}</p>
-        </div>
-        <button className='next' onClick={() => deleteFav(fav.yelpid)}>
-          <i className='fa fa-times'></i>
-        </button>
-      </li>
-    });
+    dispatch(getFav(username))
+  }, []);
 
-    setFavsList(list); // set favs list component
-  }, [favs]);
+  const favs = useSelector(state => state.favs.data);
 
   return <div>
     <nav>
@@ -49,24 +31,34 @@ const Sidebar = props => {
         <h1>Dinder</h1>
         <button
           className='history'
-          onClick={() => {
-            // toggleSidebar();
-            // favs;
-          }}
+          onClick={() => setOpen(true)}
         >
-          <i className='fa fa-history'></i>
+          <i className='fa fa-history' />
         </button>
       </div>
     </nav>
     {
-      props.isSidebarOpen && <div className='popup'>
+      open && <div className='popup'>
         <div className='popup-header'>
           <h2>Favorites:</h2>
-          <button className='back'>
-            <i className='fa fa-arrow-left'></i>
+          <button className='back' onClick={() => setOpen(false)}>
+            <i className='fa fa-arrow-left' />
           </button>
         </div>
-        <ul>{favsList}</ul>
+        <ul>{
+          favs ? favs.map(fav => {
+            return <li key={fav.yelpid}>
+              <img src={fav.imgurl} />
+              <div className='fav-details'>
+                <p>{fav.name}</p>
+                <p>{fav.address}</p>
+              </div>
+              <button className='next' onClick={() => dispatch(deleteFav(username, fav.yelpid))}>
+                <i className='fa fa-times' />
+              </button>
+            </li>;
+          }) : undefined
+        }</ul>
       </div>
     }
   </div>;

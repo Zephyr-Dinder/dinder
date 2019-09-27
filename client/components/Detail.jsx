@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {useDispatch, useSelector } from 'react-redux';
-import { getCurrentBusiness } from '../action/action';
+import { getCurrentBusiness, addFav } from '../action/action';
 import Sidebar from "./Sidebar.jsx";
 import ReactLoading from "react-loading";
 
@@ -15,6 +15,7 @@ export default props => {
   }, []);
 
   const currentBusiness = useSelector(state => state.currentBusiness.data);
+  const username = useSelector(state => state.user.data);
 
   let counter = 0;
   return currentBusiness ?
@@ -43,8 +44,13 @@ export default props => {
       <button
         className='fav'
         onClick={() => {
-          // addFav();
-          // this.resetState();
+          dispatch(addFav({
+            name: currentBusiness.name,
+            address: currentBusiness.location.address1,
+            imgurl: currentBusiness.image_url,
+            yelpid: currentBusiness.id,
+            yelpurl: currentBusiness.url
+          }, username));
         }}
       >
         <i className='fa fa-heart' />
